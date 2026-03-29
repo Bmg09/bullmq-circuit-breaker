@@ -34,7 +34,12 @@ jobs:
 
       - name: Publish to GitHub Packages
         run: |
-          npm pkg set name='@Bmg09/bullmq-circuit-breaker'
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.name = '@bmg09/bullmq-circuit-breaker';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
