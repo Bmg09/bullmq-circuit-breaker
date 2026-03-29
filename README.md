@@ -71,15 +71,15 @@ stateDiagram-v2
 
     [*] --> CLOSED
 
-    CLOSED --> CLOSED : job ✅ — record success
-    CLOSED --> CLOSED : job ❌ — record failure\n(window not full yet)
-    CLOSED --> OPEN   : job ❌ — failure rate ≥ threshold\n(window full)
+    CLOSED --> CLOSED : success - record outcome
+    CLOSED --> CLOSED : failure - record outcome<br>(window not full yet)
+    CLOSED --> OPEN   : failure - rate >= threshold<br>(window full)
 
-    OPEN --> OPEN      : jobs queue in Redis\n(worker paused)
-    OPEN --> HALF_OPEN : resetTimeout elapsed\n(worker resumed)
+    OPEN --> OPEN      : jobs queue in Redis<br>(worker paused)
+    OPEN --> HALF_OPEN : resetTimeout elapsed<br>(worker resumed)
 
-    HALF_OPEN --> CLOSED   : probe ✅ — circuit closes\nworker resumes normally
-    HALF_OPEN --> OPEN     : probe ❌ — circuit stays open\nresetTimeout restarts
+    HALF_OPEN --> CLOSED   : probe succeeds<br>worker resumes normally
+    HALF_OPEN --> OPEN     : probe fails<br>resetTimeout restarts
 
     note right of CLOSED
         Sliding window tracks
