@@ -1,6 +1,6 @@
 {
   "name": "bullmq-circuit-breaker",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Circuit Breaker wrapper for BullMQ workers — stops processing jobs when failure rate spikes, probes on recovery.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
