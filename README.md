@@ -65,24 +65,38 @@ With bullmq-circuit-breaker:
 
 ## State Machine
 
-```
-                   failure rate ≥ threshold
-                   (window must be full first)
-                             │
-          ┌──────────────────▼──────────────────┐
-          │                                     │
-          │                                     │
-       CLOSED                                 OPEN
-      (normal)                              (paused)
-          │                                     │
-          │                           resetTimeout ms
-          │                                     │
-          │              probe ✅               │
-          └────────────────────────── HALF_OPEN ◄┘
-                                          │
-                                       probe ❌
-                                          │
-                                        OPEN
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    [*] --> CLOSED
+
+    CLOSED --> CLOSED : job ✅ — record success
+    CLOSED --> CLOSED : job ❌ — record failure\n(window not full yet)
+    CLOSED --> OPEN   : job ❌ — failure rate ≥ threshold\n(window full)
+
+    OPEN --> OPEN      : jobs queue in Redis\n(worker paused)
+    OPEN --> HALF_OPEN : resetTimeout elapsed\n(worker resumed)
+
+    HALF_OPEN --> CLOSED   : probe ✅ — circuit closes\nworker resumes normally
+    HALF_OPEN --> OPEN     : probe ❌ — circuit stays open\nresetTimeout restarts
+
+    note right of CLOSED
+        Sliding window tracks
+        last N job outcomes.
+        Trips only when full.
+    end note
+
+    note right of OPEN
+        worker.pause()
+        Jobs safe in Redis.
+        No retries burned.
+    end note
+
+    note right of HALF_OPEN
+        One probe job allowed.
+        Others delayed 2s.
+    end note
 ```
 
 | State | Worker | Jobs | What happens |
