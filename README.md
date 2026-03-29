@@ -70,33 +70,10 @@ stateDiagram-v2
     direction LR
 
     [*] --> CLOSED
-
-    CLOSED --> CLOSED : success - record outcome
-    CLOSED --> CLOSED : failure - record outcome<br>(window not full yet)
-    CLOSED --> OPEN   : failure - rate >= threshold<br>(window full)
-
-    OPEN --> OPEN      : jobs queue in Redis<br>(worker paused)
-    OPEN --> HALF_OPEN : resetTimeout elapsed<br>(worker resumed)
-
-    HALF_OPEN --> CLOSED   : probe succeeds<br>worker resumes normally
-    HALF_OPEN --> OPEN     : probe fails<br>resetTimeout restarts
-
-    note right of CLOSED
-        Sliding window tracks
-        last N job outcomes.
-        Trips only when full.
-    end note
-
-    note right of OPEN
-        worker.pause()
-        Jobs safe in Redis.
-        No retries burned.
-    end note
-
-    note right of HALF_OPEN
-        One probe job allowed.
-        Others delayed 2s.
-    end note
+    CLOSED --> OPEN : failure rate >= threshold
+    OPEN --> HALF_OPEN : resetTimeout elapsed
+    HALF_OPEN --> CLOSED : probe succeeds
+    HALF_OPEN --> OPEN : probe fails
 ```
 
 | State | Worker | Jobs | What happens |
