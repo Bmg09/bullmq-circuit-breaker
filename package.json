@@ -1,0 +1,48 @@
+{
+  "name": "bullmq-circuit-breaker",
+  "version": "1.0.0",
+  "description": "A Circuit Breaker wrapper for BullMQ workers — stops processing jobs when failure rate spikes, probes on recovery.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "demo": "npx tsx examples/demo.ts",
+    "prepublishOnly": "npm test && npm run build"
+  },
+  "keywords": [
+    "bullmq",
+    "circuit-breaker",
+    "queue",
+    "redis",
+    "resilience",
+    "fault-tolerance",
+    "job-queue"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "bullmq": ">=5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "bullmq": "^5.71.1",
+    "ioredis": "^5.10.1",
+    "tsx": "^4.0.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  }
+}
